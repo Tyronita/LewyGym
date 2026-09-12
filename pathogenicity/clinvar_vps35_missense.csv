@@ -1,0 +1,11 @@
+mutant,label,significance,review_status
+D620N,1,Pathogenic,"criteria provided, multiple submitters, no conflicts"
+D620N,1,Pathogenic,"criteria provided, multiple submitters, no conflicts"
+Q488R,1,Likely pathogenic,"criteria provided, single submitter"
+Q488R,1,Likely pathogenic,"criteria provided, single submitter"
+K382R,0,Benign,"criteria provided, multiple submitters, no conflicts"
+K382R,0,Benign,"criteria provided, multiple submitters, no conflicts"
+N708H,0,Benign/Likely benign,"criteria provided, multiple submitters, no conflicts"
+N708H,0,Benign/Likely benign,"criteria provided, multiple submitters, no conflicts"
+Q716E,1,Likely pathogenic,"criteria provided, single submitter"
+Q716E,1,Likely pathogenic,"criteria provided, single submitter"

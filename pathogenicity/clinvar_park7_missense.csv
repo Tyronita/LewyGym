@@ -1,0 +1,27 @@
+mutant,label,significance,review_status
+L166P,1,Pathogenic,no assertion criteria provided
+L166P,1,Pathogenic,no assertion criteria provided
+M26I,1,Pathogenic,no assertion criteria provided
+M26I,1,Pathogenic,no assertion criteria provided
+D149A,0,Likely benign,"criteria provided, single submitter"
+D149A,0,Likely benign,"criteria provided, single submitter"
+E64D,1,Pathogenic,no assertion criteria provided
+E64D,1,Pathogenic,no assertion criteria provided
+A39S,1,Pathogenic,no assertion criteria provided
+A39S,1,Pathogenic,no assertion criteria provided
+R98Q,0,Benign/Likely benign,"criteria provided, multiple submitters, no conflicts"
+R98Q,0,Benign/Likely benign,"criteria provided, multiple submitters, no conflicts"
+A56T,0,Benign/Likely benign,"criteria provided, multiple submitters, no conflicts"
+A56T,0,Benign/Likely benign,"criteria provided, multiple submitters, no conflicts"
+Q45*,1,Pathogenic,"criteria provided, single submitter"
+Q45*,1,Pathogenic,"criteria provided, single submitter"
+T154A,1,Likely pathogenic,"criteria provided, single submitter"
+T154A,1,Likely pathogenic,"criteria provided, single submitter"
+R28Q,1,Likely pathogenic,no assertion criteria provided
+R28Q,1,Likely pathogenic,no assertion criteria provided
+L101P,1,Likely pathogenic,"criteria provided, single submitter"
+L101P,1,Likely pathogenic,"criteria provided, single submitter"
+G108S,1,Pathogenic,"criteria provided, single submitter"
+G108S,1,Pathogenic,"criteria provided, single submitter"
+R28*,1,Pathogenic,"criteria provided, single submitter"
+R28*,1,Pathogenic,"criteria provided, single submitter"
