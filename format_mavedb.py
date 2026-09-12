@@ -35,7 +35,7 @@ DATASETS = {
 }
 
 SRC = Path.home() / "protein-language-model-experiments-esm2_t33_650M_UR50D/data/pd_variants"
-DST = Path("DMS_PDGym_substitutions")
+DST = Path("DMS_LewyGym_substitutions")
 DST.mkdir(exist_ok=True)
 
 summary = []

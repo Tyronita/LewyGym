@@ -1,4 +1,4 @@
-"""PDGym scoring — masked-marginal ESM-2 over PD variant datasets.
+"""LewyGym scoring — masked-marginal ESM-2 over PD variant datasets.
 
 Spearman track:  python score.py --model 650M --assays all
 AUROC track:     python score.py --model 650M --track pathogenicity
@@ -17,7 +17,7 @@ HF = {
 }
 
 ROOT    = Path(__file__).parent
-DMS_DIR = ROOT / "DMS_PDGym_substitutions"
+DMS_DIR = ROOT / "DMS_LewyGym_substitutions"
 PATH_DIR = ROOT / "pathogenicity"
 REF_CSV = ROOT / "reference_files" / "DMS_substitutions.csv"
 
@@ -144,7 +144,7 @@ def run_pathogenicity(args):
 
 
 def main():
-    ap = argparse.ArgumentParser(prog="pdgym score")
+    ap = argparse.ArgumentParser(prog="lewygym score")
     ap.add_argument("--model",  default="8M", choices=list(HF))
     ap.add_argument("--track",  default="dms", choices=["dms", "pathogenicity"])
     ap.add_argument("--assay",  default="all", help="DMS_id or 'all'")

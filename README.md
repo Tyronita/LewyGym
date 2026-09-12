@@ -1,90 +1,158 @@
-# PDGym — Parkinson's Disease Variant Effect Benchmark
+# LewyGym
 
-A ProteinGym-compatible benchmark for zero-shot variant effect prediction across the Parkinson's disease gene panel.
+**Parkinson's Disease Protein Variant Effect Benchmark**
 
-## Why
+A ProteinGym-compatible benchmark for zero-shot variant effect prediction across the Parkinson's disease gene panel. Named after Lewy bodies — the misfolded protein aggregates that define PD pathology.
 
-ProteinGym (217 assays, Spearman leaderboard) is the standard benchmark for protein language models but contains **no Parkinson's disease proteins**. PD has a well-characterised genetic architecture spanning gain-of-function (SNCA, LRRK2) and loss-of-function (GBA, PRKN, PINK1) mechanisms — a test no existing benchmark makes.
+[![GitHub](https://img.shields.io/badge/GitHub-LewyGym-black)](https://github.com/Tyronita/LewyGym)
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-Datasets-yellow)](https://huggingface.co/datasets/Tyronita/LewyGym)
+[![License: CC0](https://img.shields.io/badge/License-CC0-blue)](https://creativecommons.org/publicdomain/zero/1.0/)
 
-PDGym fills this gap.
+---
 
-## Structure
+## Why LewyGym
 
-```
-PDGym/
-  DMS_PDGym_substitutions/     # DMS fitness scores — Spearman metric (ProteinGym-compatible)
-  pathogenicity/               # ClinVar P/LP vs B/LB labels — AUROC metric
-  reference_files/             # Metadata, wildtype sequences
-  score.py                     # Run ESM-2 masked-marginal scoring
-```
+[ProteinGym](https://github.com/OATML-Markslab/ProteinGym) (217 assays) contains **zero Parkinson's disease proteins**. PD has a well-characterised genetic architecture spanning two opposing disease mechanisms:
 
-## Substitution benchmark (DMS track)
+| Mechanism | Genes | Effect |
+|---|---|---|
+| Gain-of-function | SNCA, LRRK2 | Protein aggregation / kinase hyperactivation |
+| Loss-of-function | GBA, PRKN, PINK1, PARK7 | Enzyme/kinase activity lost |
 
-All single-residue missense variants scored. Format identical to ProteinGym substitutions.
+No existing benchmark tests whether protein language models handle both directions across a disease-coherent gene panel. **LewyGym fills that gap.**
+
+---
+
+## Benchmark tracks
+
+### Track 1 — DMS substitution fitness (Spearman, ProteinGym-compatible)
+
+All single-residue missense variants. Format identical to ProteinGym substitutions.
 
 | DMS_id | Gene | Variants | Phenotype | Source |
 |---|---|---|---|---|
-| SNCA_HUMAN_Newberry_2020 | SNCA | 2,728 | Yeast expression / membrane toxicity | MaveDB `00000045-k-1` |
-| SNCA_HUMAN_Noh_2026_1pct | SNCA | 2,725 | Yeast fitness, 1% induction | MaveDB `00001249-a-1` |
-| SNCA_HUMAN_Noh_2026_01pct | SNCA | 2,733 | Yeast fitness, 0.1% induction | MaveDB `00001249-a-2` |
-| SNCA_HUMAN_Noh_2026_001pct | SNCA | 2,731 | Yeast fitness, 0.01% induction | MaveDB `00001249-a-3` |
-| SNCA_HUMAN_Noh_2026_0001pct | SNCA | 2,643 | Yeast fitness, 0.001% induction | MaveDB `00001249-a-4` |
+| SNCA_HUMAN_Newberry_2020 | SNCA | 2,728 | Yeast expression / membrane toxicity | [MaveDB 00000045-k-1](https://www.mavedb.org/experiment/urn:mavedb:00000045-k/) |
+| SNCA_HUMAN_Noh_2026_1pct | SNCA | 2,725 | Yeast fitness, 1% galactose induction | [MaveDB 00001249-a-1](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-1/) |
+| SNCA_HUMAN_Noh_2026_01pct | SNCA | 2,733 | Yeast fitness, 0.1% induction | [MaveDB 00001249-a-2](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-2/) |
+| SNCA_HUMAN_Noh_2026_001pct | SNCA | 2,731 | Yeast fitness, 0.01% induction | [MaveDB 00001249-a-3](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-3/) |
+| SNCA_HUMAN_Noh_2026_0001pct | SNCA | 2,643 | Yeast fitness, 0.001% induction | [MaveDB 00001249-a-4](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-4/) |
 
-**Metric:** Spearman correlation between model log-likelihood deltas and DMS fitness scores.  
-**Scoring strategy:** masked-marginal (same as ProteinGym; wt-marginals give lower Spearman).
+**Metric:** Spearman ρ between model log-likelihood delta and experimental fitness score.
 
-## Pathogenicity benchmark (ClinVar track)
+### Track 2 — ClinVar pathogenicity classification (AUROC)
 
-ClinVar-classified missense SNVs (Pathogenic/Likely Pathogenic vs Benign/Likely Benign).
+ClinVar-classified missense SNVs: Pathogenic/Likely Pathogenic vs Benign/Likely Benign.
 
-| File | Gene | P/LP | B/LB | Disease mechanism |
+| Gene | P/LP | B/LB | Mechanism | Disease relevance |
 |---|---|---|---|---|
-| clinvar_lrrk2_missense.csv | LRRK2 | 20 | 142 | GOF — kinase hyperactivation |
-| clinvar_gba_missense.csv | GBA | 500 | 6 | LOF — lysosomal enzyme deficiency |
-| clinvar_prkn_missense.csv | PRKN | 58 | 30 | LOF — ubiquitin ligase |
-| clinvar_pink1_missense.csv | PINK1 | 44 | 22 | LOF — mitophagy kinase |
-| clinvar_snca_missense.csv | SNCA | 10 | 6 | GOF — aggregation |
-| clinvar_park7_missense.csv | PARK7 | 20 | 6 | LOF — oxidative stress sensor |
-| clinvar_vps35_missense.csv | VPS35 | 6 | 4 | GOF — retromer dysfunction |
+| GBA | 500 | 6 | LOF — glucocerebrosidase | Largest genetic PD risk factor |
+| PRKN | 58 | 30 | LOF — ubiquitin ligase | Most common recessive PD |
+| PINK1 | 44 | 22 | LOF — mitophagy kinase | Recessive early-onset PD |
+| LRRK2 | 20 | 142 | GOF — kinase hyperactivation | Most common dominant PD |
+| SNCA | 10 | 6 | GOF — aggregation | Hallmark PD protein |
+| PARK7 | 20 | 6 | LOF — oxidative sensor | Recessive PD |
+| VPS35 | 6 | 4 | GOF — retromer dysfunction | Dominant PD |
 
-**Metric:** AUROC. Labels: 1 = Pathogenic/Likely Pathogenic, 0 = Benign/Likely Benign.
+**Metric:** AUROC. Labels: 1 = P/LP, 0 = B/LB. Source: [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/), downloaded September 2026.
+
+---
 
 ## Quick start
 
 ```bash
-git clone https://github.com/Tyronita/PDGym
-cd PDGym
+git clone https://github.com/Tyronita/LewyGym
+cd LewyGym
 pip install transformers torch pandas scipy numpy
 
-# Score SNCA with ESM-2 8M (fast, CPU)
+# Smoke test — ESM-2 8M, SNCA Newberry, CPU, ~2 min
 python score.py --model 8M --assay SNCA_HUMAN_Newberry_2020
 
-# Score all DMS assays with ESM-2 650M
+# Full DMS track — ESM-2 650M, all 5 assays
 python score.py --model 650M --assays all
 
-# Score ClinVar pathogenicity (AUROC)
+# ClinVar pathogenicity track
 python score.py --model 650M --track pathogenicity
 ```
 
-## Data sources
+## Or load from HuggingFace
 
-- **MaveDB** — [mavedb.org](https://www.mavedb.org) — open repository for multiplexed variant effect assays
-- **ClinVar** — [ncbi.nlm.nih.gov/clinvar](https://www.ncbi.nlm.nih.gov/clinvar) — NCBI variant pathogenicity database, downloaded September 2026
-- All data is open access. MaveDB data is CC0 (public domain).
+```python
+from datasets import load_dataset
 
-## Citation
+# DMS fitness track
+dms = load_dataset("Tyronita/LewyGym", "substitutions")
 
-If you use PDGym, please also cite the original assay publications:
+# ClinVar pathogenicity track  
+path = load_dataset("Tyronita/LewyGym", "pathogenicity")
+```
 
-- Newberry et al. (2020) *Nature Chemical Biology* — SNCA yeast toxicity DMS. doi:10.1038/s41589-020-0480-6
-- Noh et al. (2026) *Protein Science* — SNCA concentration-dependent DMS. doi:10.1002/pro.70456
-- Landrum et al. — ClinVar. *Nucleic Acids Research*.
+---
+
+## Baseline results
+
+*(Running — will update)*
+
+| Model | SNCA Newberry ρ | SNCA Noh mean ρ | Mean ρ (DMS) |
+|---|---|---|---|
+| ESM-2 8M | — | — | — |
+| ESM-2 650M | — | — | — |
+| ESM-1v | — | — | — |
+| AlphaMissense | — | — | — |
+
+---
+
+## Scoring method
+
+**Masked-marginal scoring** (same as ProteinGym):
+
+```
+For each position i in wildtype sequence:
+  1. Mask position i
+  2. One forward pass through model
+  3. cache[i] = log_softmax(logits[i])
+
+For each variant (e.g. A53T):
+  score = log p(T | context) - log p(A | context)
+
+Multi-mutants: sum per-position deltas
+```
+
+Cost: O(L²) tokens per assay. SNCA (L=140) takes ~20,000 tokens — runs in seconds on CPU.
+
+---
 
 ## Roadmap
 
-- [ ] LRRK2 kinase activity dataset (curated from literature, ~70 variants)
-- [ ] GBA enzyme activity dataset (curated from Gaucher literature, ~50 variants)
-- [ ] PINK1 kinase activity dataset (~20 variants)
-- [ ] LRRK2 kinase domain DMS (wet lab, in progress)
-- [ ] Leaderboard with ESM-2, ESM-1v, AlphaMissense, EVE, ProSST baselines
-- [ ] HuggingFace Datasets integration
+- [x] SNCA DMS — 5 assays, 13,560 variants (MaveDB)
+- [x] ClinVar track — 7 PD genes, 874 classified missense variants
+- [x] score.py — ESM-2 masked-marginal scoring
+- [ ] ESM-2 8M/650M baseline results
+- [ ] ESM-1v, AlphaMissense, EVE, ProSST baselines
+- [ ] LRRK2 kinase activity dataset (~70 variants, curated from literature)
+- [ ] GBA enzyme activity dataset (~50 variants)
+- [ ] bioRxiv preprint
+
+---
+
+## Data sources and licences
+
+| Source | Licence | Citation |
+|---|---|---|
+| MaveDB (Newberry 2020) | CC0 | Newberry et al., *Nature Chemical Biology* 2020. [doi:10.1038/s41589-020-0480-6](https://doi.org/10.1038/s41589-020-0480-6) |
+| MaveDB (Noh 2026) | CC0 | Noh et al., *Protein Science* 2026. [doi:10.1002/pro.70456](https://doi.org/10.1002/pro.70456) |
+| ClinVar | Public domain | Landrum et al., *Nucleic Acids Research*. [PMID:26582918](https://pubmed.ncbi.nlm.nih.gov/26582918/) |
+
+LewyGym itself is released under CC0 (public domain).
+
+---
+
+## Citation
+
+```bibtex
+@misc{lewygym2026,
+  title   = {LewyGym: A Parkinson's Disease Protein Variant Effect Benchmark},
+  author  = {O'Leary, Niall},
+  year    = {2026},
+  url     = {https://github.com/Tyronita/LewyGym}
+}
+```

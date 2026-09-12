@@ -1,4 +1,4 @@
-"""Build PDGym reference files matching ProteinGym's reference CSV structure."""
+"""Build LewyGym reference files matching ProteinGym's reference CSV structure."""
 import csv
 from pathlib import Path
 
