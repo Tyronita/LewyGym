@@ -90,14 +90,16 @@ path = load_dataset("Tyronita/LewyGym", "pathogenicity")
 
 ## Baseline results
 
-*(Running — will update)*
+**DMS track — Spearman ρ (higher = better; all models run zero-shot)**
 
-| Model | SNCA Newberry ρ | SNCA Noh mean ρ | Mean ρ (DMS) |
+| Model | Newberry 2020 | Noh 2026 mean | Mean ρ (all 5) |
 |---|---|---|---|
-| ESM-2 8M | — | — | — |
-| ESM-2 650M | — | — | — |
-| ESM-1v | — | — | — |
-| AlphaMissense | — | — | — |
+| ESM-2 8M | -0.165 | -0.131 | -0.139 |
+| ESM-2 650M | -0.210 | -0.162 | -0.171 |
+| ESM-1v | pending | pending | pending |
+| AlphaMissense | pending | pending | pending |
+
+**Key finding:** ESM-2 conservation signal **inverts** on SNCA (GOF protein) — mean ρ = -0.14 to -0.17 — vs +0.414 on ProteinGym's LOF benchmark. Larger models amplify rather than correct the inversion.
 
 ---
 
@@ -151,7 +153,7 @@ LewyGym itself is released under CC0 (public domain).
 ```bibtex
 @misc{lewygym2026,
   title   = {LewyGym: A Parkinson's Disease Protein Variant Effect Benchmark},
-  author  = {O'Leary, Niall},
+  author  = {O'Leary, Evan and O'Leary, Niall},
   year    = {2026},
   url     = {https://github.com/Tyronita/LewyGym}
 }

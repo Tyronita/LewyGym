@@ -1,0 +1,26 @@
+{
+  "model": "ESM-2 650M",
+  "results": {
+    "SNCA_HUMAN_Newberry_2020": {
+      "spearman": -0.2097,
+      "n": 2728
+    },
+    "SNCA_HUMAN_Noh_2026_1pct": {
+      "spearman": -0.1675,
+      "n": 2725
+    },
+    "SNCA_HUMAN_Noh_2026_01pct": {
+      "spearman": -0.1597,
+      "n": 2733
+    },
+    "SNCA_HUMAN_Noh_2026_001pct": {
+      "spearman": -0.1462,
+      "n": 2731
+    },
+    "SNCA_HUMAN_Noh_2026_0001pct": {
+      "spearman": -0.171,
+      "n": 2643
+    }
+  },
+  "mean_spearman": -0.1708
+}
