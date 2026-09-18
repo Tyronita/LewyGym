@@ -8,6 +8,8 @@ A ProteinGym-compatible benchmark for zero-shot variant effect prediction across
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-Datasets-yellow)](https://huggingface.co/datasets/Tyronita/LewyGym)
 [![License: CC0](https://img.shields.io/badge/License-CC0-blue)](https://creativecommons.org/publicdomain/zero/1.0/)
 
+📄 **[Preprint PDF](lewygym_preprint.pdf)** · 📊 **[Benchmark Survey](lewygym_survey.pdf)** · 🎯 **[Project Pitch](lewy_pitch.pdf)**
+
 ---
 
 ## Why LewyGym
@@ -130,7 +132,8 @@ Cost: O(L²) tokens per assay. SNCA (L=140) takes ~20,000 tokens — runs in sec
 - [x] SNCA DMS — 5 assays, 13,560 variants (MaveDB)
 - [x] ClinVar track — 7 PD genes, 874 classified missense variants
 - [x] score.py — ESM-2 masked-marginal scoring
-- [ ] ESM-2 8M/650M baseline results
+- [x] ESM-2 8M/650M baseline results (ρ = -0.139 / -0.171)
+- [x] Preprint + survey PDF
 - [ ] ESM-1v, AlphaMissense, EVE, ProSST baselines
 - [ ] LRRK2 kinase activity dataset (~70 variants, curated from literature)
 - [ ] GBA enzyme activity dataset (~50 variants)
