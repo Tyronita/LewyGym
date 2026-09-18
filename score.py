@@ -1,6 +1,6 @@
 """LewyGym scoring — masked-marginal ESM-2 over PD variant datasets.
 
-Spearman track:  python score.py --model 650M --assays all
+Spearman track:  python score.py --model 650M --assay all
 AUROC track:     python score.py --model 650M --track pathogenicity
 Smoke test:      python score.py --model 8M --assay SNCA_HUMAN_Newberry_2020
 """
@@ -77,8 +77,10 @@ def run_dms(args):
         if not f.exists():
             print(f"  skip {row.DMS_id} — file not found"); continue
         df = pd.read_csv(f)
+        # Exclude synonymous variants (ProteinGym protocol: missense only)
+        df = df[df.mutant.apply(lambda x: x[0] != x[-1])]
         wt = row.target_seq
-        print(f"\n{row.DMS_id}  L={row.seq_len}  n={len(df)}")
+        print(f"\n{row.DMS_id}  L={row.seq_len}  n={len(df)} (missense only)")
         cache = masked_marginal(tok, model, wt, device)
         preds, actuals = [], []
         for _, vrow in df.iterrows():
@@ -88,13 +90,15 @@ def run_dms(args):
             except AssertionError as e:
                 print(f"    skip {vrow.mutant}: {e}")
         rho = spearmanr(preds, actuals).correlation
-        results[row.DMS_id] = {"spearman": rho, "n": len(preds)}
+        results[row.DMS_id] = {"spearman": round(rho, 4), "n": len(preds)}
         print(f"  Spearman rho = {rho:+.3f}  (n={len(preds)})")
 
+    mean_rho = round(float(np.mean([v['spearman'] for v in results.values()])), 4)
     print(f"\n{'='*50}")
-    print(f"Mean Spearman: {np.mean([v['spearman'] for v in results.values()]):+.3f}")
+    print(f"Mean Spearman: {mean_rho:+.4f}")
     Path("results").mkdir(exist_ok=True)
-    Path(f"results/dms_{args.model}.json").write_text(json.dumps(results, indent=2))
+    out = {"model": f"ESM-2 {args.model}", "results": results, "mean_spearman": mean_rho}
+    Path(f"results/esm2_{args.model}.json").write_text(json.dumps(out, indent=2))
 
 
 def run_pathogenicity(args):
@@ -123,19 +127,29 @@ def run_pathogenicity(args):
             print(f"  skip {gene} — no wildtype sequence (add to reference_files/{gene.upper()}_HUMAN.fasta)")
             continue
         df = pd.read_csv(csvf)
+        # Remove stop-codon variants (scored as unknown token — meaningless)
+        df = df[~df.mutant.str.endswith("*")]
+        # Deduplicate (ClinVar multi-submission rows appear 2x)
+        df = df.drop_duplicates(subset=["mutant"])
         cache = masked_marginal(tok, model, wt, device)
         preds, labels = [], []
         for _, row in df.iterrows():
             try:
                 s = score_variant(row.mutant, wt, cache, tok)
-                preds.append(-s)   # more negative delta = more damaging
+                preds.append(-s)   # more negative delta = more damaging (validated for LOF genes)
                 labels.append(row.label)
             except (AssertionError, KeyError):
                 pass
+        n_pos = sum(labels); n_neg = len(labels) - n_pos
         if len(set(labels)) < 2:
             print(f"  skip {gene} — only one class after filtering"); continue
+        # Minimum n guard: AUROC is unreliable below ~30 variants per class
+        MIN_PER_CLASS = 15
+        if n_pos < MIN_PER_CLASS or n_neg < MIN_PER_CLASS:
+            print(f"  skip {gene} — insufficient class sizes (P/LP={n_pos}, B/LB={n_neg}; need >={MIN_PER_CLASS} each)")
+            continue
         auroc = roc_auc_score(labels, preds)
-        results[gene] = {"auroc": auroc, "n": len(preds)}
+        results[gene] = {"auroc": round(auroc, 3), "n": len(preds), "n_pos": n_pos, "n_neg": n_neg}
         print(f"  {gene:<8} AUROC={auroc:.3f}  n={len(preds)}")
 
     print(f"\nMean AUROC: {np.mean([v['auroc'] for v in results.values()]):.3f}")

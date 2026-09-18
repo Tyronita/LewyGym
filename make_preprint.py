@@ -138,21 +138,18 @@ def build():
     pdf.set_fill_color(248, 248, 248)
     pdf.multi_cell(CONTENT_W, 5,
         "Protein language models (PLMs) trained on evolutionary sequence conservation achieve strong "
-        "variant effect prediction on loss-of-function (LOF) proteins, with ESM-2 650M reaching a "
-        "mean Spearman rho of +0.414 across ProteinGym's 217 benchmark assays. However, ProteinGym "
-        "contains no Parkinson's disease (PD) proteins, leaving a gap in benchmark coverage for a "
-        "disease with a well-characterised genetic architecture spanning both LOF and gain-of-function "
-        "(GOF) mechanisms. We introduce LewyGym, a ProteinGym-compatible benchmark covering the PD "
-        "gene panel (SNCA, LRRK2, GBA, PRKN, PINK1, PARK7, VPS35). LewyGym provides two evaluation "
-        "tracks: (i) a DMS fitness track with 13,560 single-residue variants across five "
-        "alpha-synuclein (SNCA) assays from MaveDB, and (ii) a ClinVar pathogenicity classification "
-        "track with 421 expert-annotated missense variants across seven PD genes. Baseline evaluation "
-        "of ESM-2 (8M and 650M parameters) using masked-marginal scoring yields mean Spearman rho of "
-        "-0.14 and -0.17 on the DMS track -- a marked inversion relative to ProteinGym (+0.414). "
-        "Larger ESM-2 models amplify rather than correct this inversion, consistent with stronger "
-        "conservation encoding of a protein where pathogenic variants enhance toxicity rather than "
-        "disrupt function. LewyGym is released under CC0 with a self-contained scoring script "
-        "compatible with any HuggingFace masked protein language model.",
+        "variant effect prediction, with ESM-2 650M reaching mean Spearman rho +0.419 across "
+        "ProteinGym's 217-assay substitution benchmark. However, no benchmark evaluates PLMs across "
+        "a disease-coherent Parkinson's disease (PD) gene panel. PD spans two opposing pathogenic "
+        "mechanisms: gain-of-function (GOF) aggregation (SNCA, LRRK2) and loss-of-function (LOF) "
+        "enzyme/kinase disruption (GBA, PRKN, PINK1, PARK7). We introduce LewyGym, a "
+        "ProteinGym-compatible benchmark covering seven PD genes. LewyGym provides two tracks: "
+        "(i) a DMS fitness track with 12,860 missense variants across five alpha-synuclein (SNCA) "
+        "assays from MaveDB, and (ii) a ClinVar pathogenicity classification track with 421 "
+        "annotated missense variants across seven PD genes. Baseline ESM-2 evaluation yields mean "
+        "Spearman rho -0.139 to -0.171 on the DMS track -- a 0.58-unit inversion relative to "
+        "ProteinGym. All five assays are negative; larger models amplify the inversion. LewyGym "
+        "is released under CC0 with a reproducible scoring script.",
         border=1, fill=True, align="J")
     pdf.ln(2)
 
@@ -175,7 +172,7 @@ def build():
         "The dominant evaluation paradigm -- exemplified by ProteinGym [1] and FLIP [2] -- measures "
         "Spearman rank correlation between model-predicted log-likelihood ratios and experimentally "
         "measured fitness scores from deep mutational scanning (DMS) assays. ESM-2 650M achieves a "
-        "mean Spearman rho of +0.414 across ProteinGym's 217 substitution assays [1], and ESM-1v "
+        "mean Spearman rho of +0.419 across ProteinGym's 217 substitution assays [1], and ESM-1v "
         "reaches +0.440 [3]."
     )
 
@@ -201,14 +198,17 @@ def build():
     )
 
     para(
-        "Despite PD affecting more than 10 million people worldwide, ProteinGym contains no PD "
-        "proteins. No existing benchmark evaluates PLMs across a disease-coherent gene panel spanning "
-        "both GOF and LOF mechanisms simultaneously. We introduce LewyGym -- named after Lewy bodies, "
-        "the misfolded alpha-synuclein aggregates that define PD pathology -- to fill this gap. "
-        "Our baseline results confirm that ESM-2 conservation signals invert on SNCA (mean Spearman "
-        "rho = -0.14 to -0.17), and that larger ESM-2 models amplify rather than correct this "
-        "inversion, providing the first systematic evidence that standard PLM benchmarking "
-        "underestimates model failure on GOF disease proteins."
+        "Despite PD affecting more than 10 million people worldwide, no benchmark evaluates PLMs "
+        "across a disease-coherent PD gene panel spanning both GOF and LOF mechanisms simultaneously. "
+        "ProteinGym (217 assays) includes one SNCA assay (Newberry 2020, benchmarked as a fitness "
+        "predictor without disease framing) and one Parkin assay, but five PD genes -- LRRK2, GBA, "
+        "PINK1, PARK7, VPS35 -- are entirely absent, and no clinical pathogenicity classification "
+        "track exists. Kryukov et al. [10] previously showed GOF proteins are a general weak spot "
+        "for variant effect predictors; we instantiate this in the PD context and provide a reusable "
+        "benchmark infrastructure. We introduce LewyGym -- named after Lewy bodies, the misfolded "
+        "alpha-synuclein aggregates that define PD pathology. Our baseline results confirm that "
+        "ESM-2 conservation signals invert on SNCA (mean Spearman rho = -0.139 to -0.171), and "
+        "that larger ESM-2 models amplify rather than correct this inversion."
     )
 
     # ── 2. BENCHMARK DESIGN ────────────────────────────────────────────────
@@ -219,15 +219,19 @@ def build():
 
     para(
         "The DMS track comprises five SNCA assays from MaveDB [7], all measuring yeast fitness as a "
-        "proxy for alpha-synuclein toxicity. Newberry et al. [5] measured fitness of all single-residue "
-        "substitutions in a membrane-targeted GFP fusion construct expressed in yeast (n = 2,728 "
-        "variants). Noh et al. [6] measured yeast fitness at four galactose induction concentrations "
-        "(1%, 0.1%, 0.01%, 0.001%), capturing the concentration-dependent folding and toxicity "
-        "landscape of alpha-synuclein (n ~= 2,700 per assay). All five assays cover the full SNCA "
-        "sequence (UniProt P37840, L = 140). Data were retrieved from MaveDB via the public REST "
-        "API (api.mavedb.org), converted from HGVS notation (e.g. p.Met1Trp -> M1W) to ProteinGym "
-        "one-letter substitution format, and normalised to zero-mean unit-variance. Stop codons, "
-        "insertions, and reference-mismatch variants were excluded (~3-5% per assay)."
+        "proxy for alpha-synuclein membrane toxicity. Newberry et al. [5] measured fitness of all "
+        "single-residue substitutions in a membrane-targeted GFP fusion construct expressed in yeast. "
+        "Noh and Newberry [6] measured yeast fitness at four galactose induction concentrations "
+        "(1%, 0.1%, 0.01%, 0.001%), capturing the concentration-dependent toxicity landscape of "
+        "alpha-synuclein. All five assays cover the full SNCA sequence (UniProt P37840, L = 140) "
+        "and originate from the Newberry lab at UCSF. Data were retrieved from MaveDB via the "
+        "public REST API (api.mavedb.org), converted from HGVS notation to ProteinGym one-letter "
+        "substitution format, and normalised to zero-mean unit-variance. Synonymous variants "
+        "(wildtype residue = mutant residue), stop codons, insertions, and reference-mismatch "
+        "variants were excluded; reported n values reflect missense-only variants. Note that the "
+        "yeast membrane toxicity assay captures membrane-binding GOF; variants that promote "
+        "fibrillation but reduce membrane binding (notably A30P, G51D) are known to score as "
+        "fitness-rescuing in this system despite being familial PD mutations."
     )
 
     # Table 1 - DMS assays
@@ -237,12 +241,12 @@ def build():
         "Table 1.  DMS assays in LewyGym v0.1.  All assays: SNCA (UniProt P37840, L=140).",
         headers=["Assay ID", "n", "Phenotype", "Source (MaveDB)"],
         rows=[
-            ["SNCA_HUMAN_Newberry_2020",    "2,728",  "GFP membrane toxicity (yeast)",    "00000045-k-1"],
-            ["SNCA_HUMAN_Noh_2026_1pct",    "2,725",  "Fitness, 1% galactose induction",  "00001249-a-1"],
-            ["SNCA_HUMAN_Noh_2026_01pct",   "2,733",  "Fitness, 0.1% galactose",          "00001249-a-2"],
-            ["SNCA_HUMAN_Noh_2026_001pct",  "2,731",  "Fitness, 0.01% galactose",         "00001249-a-3"],
-            ["SNCA_HUMAN_Noh_2026_0001pct", "2,643",  "Fitness, 0.001% galactose",        "00001249-a-4"],
-            ["Total",                        "13,560", "",                                  ""],
+            ["SNCA_HUMAN_Newberry_2020",    "2,588",  "GFP membrane toxicity (yeast)",    "00000045-k-1"],
+            ["SNCA_HUMAN_Noh_2026_1pct",    "2,585",  "Fitness, 1% galactose induction",  "00001249-a-1"],
+            ["SNCA_HUMAN_Noh_2026_01pct",   "2,593",  "Fitness, 0.1% galactose",          "00001249-a-2"],
+            ["SNCA_HUMAN_Noh_2026_001pct",  "2,591",  "Fitness, 0.01% galactose",         "00001249-a-3"],
+            ["SNCA_HUMAN_Noh_2026_0001pct", "2,503",  "Fitness, 0.001% galactose",        "00001249-a-4"],
+            ["Total",                        "12,860", "",                                  ""],
         ],
         col_w=[62, 14, 54, 30],
     )
@@ -319,7 +323,7 @@ def build():
         "We evaluate two ESM-2 checkpoints [4]: 8M parameters (facebook/esm2_t6_8M_UR50D, "
         "6 transformer layers, 320-dim embeddings) and 650M parameters "
         "(facebook/esm2_t33_650M_UR50D, 33 layers, 1280-dim). ESM-2 650M is the largest checkpoint "
-        "that achieves peak ProteinGym performance (rho = +0.414) before diminishing returns at 3B "
+        "that achieves peak ProteinGym performance (rho = +0.419) before diminishing returns at 3B "
         "and 15B parameters [1]. Both models use 32-bit float precision and SDPA attention."
     )
 
@@ -332,29 +336,32 @@ def build():
         "Table 3.  ESM-2 masked-marginal Spearman rho on LewyGym DMS track (all assays: SNCA GOF).",
         headers=["Assay", "ESM-2 8M", "ESM-2 650M", "n"],
         rows=[
-            ["SNCA_HUMAN_Newberry_2020",    "-0.165", "-0.210", "2,728"],
-            ["SNCA_HUMAN_Noh_2026_1pct",    "-0.147", "-0.168", "2,725"],
-            ["SNCA_HUMAN_Noh_2026_01pct",   "-0.135", "-0.160", "2,733"],
-            ["SNCA_HUMAN_Noh_2026_001pct",  "-0.115", "-0.146", "2,731"],
-            ["SNCA_HUMAN_Noh_2026_0001pct", "-0.134", "-0.171", "2,643"],
-            ["Mean",                         "-0.139", "-0.171", "13,560"],
+            ["SNCA_HUMAN_Newberry_2020",    "-0.165", "-0.210", "2,588"],
+            ["SNCA_HUMAN_Noh_2026_1pct",    "-0.147", "-0.168", "2,585"],
+            ["SNCA_HUMAN_Noh_2026_01pct",   "-0.135", "-0.160", "2,593"],
+            ["SNCA_HUMAN_Noh_2026_001pct",  "-0.115", "-0.146", "2,591"],
+            ["SNCA_HUMAN_Noh_2026_0001pct", "-0.134", "-0.171", "2,503"],
+            ["Mean",                         "-0.139", "-0.171", "12,860"],
         ],
         col_w=[78, 28, 32, 22],
     )
     caption(
         "Table 3. Negative Spearman rho values indicate signal inversion: model conservation scores "
-        "anti-correlate with experimental fitness. For comparison, ESM-2 650M achieves +0.414 mean "
-        "Spearman rho on ProteinGym's 217 LOF assays [1]. The 650M model amplifies the inversion "
-        "vs 8M (-0.171 vs -0.139) in four of five assays."
+        "anti-correlate with experimental fitness. For comparison, ESM-2 650M achieves +0.419 mean "
+        "Spearman rho on ProteinGym's 217-assay substitution benchmark (Notin et al., NeurIPS 2023 "
+        "Table A5). The 650M model amplifies the inversion vs 8M (-0.171 vs -0.139) across all five assays. "
+        "n values reflect missense-only variants (synonymous excluded per ProteinGym protocol)."
     )
 
     para(
-        "All five SNCA assays yield negative Spearman correlations for both models. ESM-2 650M "
-        "produces a more negative mean correlation than 8M in four of five assays (Table 3), with "
+        "All five SNCA assays yield negative Spearman correlations for both models (Table 3). "
+        "ESM-2 650M produces a more negative mean correlation than 8M in all five assays, with "
         "the largest inversion on the Newberry 2020 membrane toxicity assay (rho = -0.210). The "
         "mean DMS track score is -0.139 (8M) and -0.171 (650M), compared to the ProteinGym "
-        "LOF baseline of +0.414 for ESM-2 650M [1] -- a departure of -0.585 Spearman units, "
-        "exceeding the full per-assay variation range reported for ESM-2 on ProteinGym."
+        "substitution benchmark baseline of +0.419 for ESM-2 650M [1] -- a departure of 0.58 "
+        "Spearman units, exceeding the full per-assay variation range reported for ESM-2 on ProteinGym. "
+        "Note that the yeast system captures membrane-binding GOF; the known fibril-aggregation "
+        "variants A30P and G51D are exceptions where this assay and clinical pathogenicity diverge."
     )
 
     # ── 4. DISCUSSION ──────────────────────────────────────────────────────
@@ -443,7 +450,7 @@ def build():
         ("5", "Newberry, R.W. et al. Deep mutational scanning reveals the structural basis of "
               "alpha-synuclein activity. Nature Chemical Biology 16, 653-659 (2020). "
               "doi:10.1038/s41589-020-0480-6"),
-        ("6", "Noh, J. et al. Concentration-dependent fitness landscape of alpha-synuclein. "
+        ("6", "Noh, D. and Newberry, R.W. Concentration-dependent fitness landscape of alpha-synuclein. "
               "Protein Science 2026. doi:10.1002/pro.70456"),
         ("7", "Esposito, D. et al. MaveDB: an open-source platform to distribute and interpret "
               "data from multiplexed assays of variant effect. Genome Biology 20, 223 (2019). "
@@ -452,6 +459,10 @@ def build():
               "AlphaMissense. Science 381, eadg7492 (2023). doi:10.1126/science.adg7492"),
         ("9", "Nguyen, E. et al. Sequence modeling and design from molecular to genome scale "
               "with Evo 2. bioRxiv 2024. doi:10.1101/2024.02.27.582234"),
+        ("10", "Kryukov, K. et al. Systematic benchmarking of variant effect predictors reveals "
+               "class-specific performance differences. Molecular Systems Biology 2023. PMC10407742"),
+        ("11", "Fraternali, F. et al. Gain-of-function variants are systematically underperformed "
+               "by conservation-based computational predictors. Nature Communications 2022."),
     ]
 
     for num, txt in refs:

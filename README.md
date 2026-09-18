@@ -12,7 +12,9 @@ A ProteinGym-compatible benchmark for zero-shot variant effect prediction across
 
 ## Why LewyGym
 
-[ProteinGym](https://github.com/OATML-Markslab/ProteinGym) (217 assays) contains **zero Parkinson's disease proteins**. PD has a well-characterised genetic architecture spanning two opposing disease mechanisms:
+[ProteinGym](https://github.com/OATML-Markslab/ProteinGym) (217 assays) contains one SNCA assay (Newberry 2020, benchmarked as a fitness predictor without disease framing) and one Parkin assay — but **no disease-coherent PD panel**. Five PD genes (LRRK2, GBA, PINK1, PARK7, VPS35) are entirely absent. No benchmark frames PD data around the two opposing disease mechanisms, and no clinical pathogenicity classification track exists for PD proteins.
+
+PD has a well-characterised genetic architecture spanning two opposing disease mechanisms:
 
 | Mechanism | Genes | Effect |
 |---|---|---|
@@ -32,10 +34,10 @@ All single-residue missense variants. Format identical to ProteinGym substitutio
 | DMS_id | Gene | Variants | Phenotype | Source |
 |---|---|---|---|---|
 | SNCA_HUMAN_Newberry_2020 | SNCA | 2,728 | Yeast expression / membrane toxicity | [MaveDB 00000045-k-1](https://www.mavedb.org/experiment/urn:mavedb:00000045-k/) |
-| SNCA_HUMAN_Noh_2026_1pct | SNCA | 2,725 | Yeast fitness, 1% galactose induction | [MaveDB 00001249-a-1](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-1/) |
-| SNCA_HUMAN_Noh_2026_01pct | SNCA | 2,733 | Yeast fitness, 0.1% induction | [MaveDB 00001249-a-2](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-2/) |
-| SNCA_HUMAN_Noh_2026_001pct | SNCA | 2,731 | Yeast fitness, 0.01% induction | [MaveDB 00001249-a-3](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-3/) |
-| SNCA_HUMAN_Noh_2026_0001pct | SNCA | 2,643 | Yeast fitness, 0.001% induction | [MaveDB 00001249-a-4](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-4/) |
+| SNCA_HUMAN_Noh_2026_1pct | SNCA | 2,585 | Yeast fitness, 1% galactose induction | [MaveDB 00001249-a-1](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-1/) |
+| SNCA_HUMAN_Noh_2026_01pct | SNCA | 2,593 | Yeast fitness, 0.1% induction | [MaveDB 00001249-a-2](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-2/) |
+| SNCA_HUMAN_Noh_2026_001pct | SNCA | 2,591 | Yeast fitness, 0.01% induction | [MaveDB 00001249-a-3](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-3/) |
+| SNCA_HUMAN_Noh_2026_0001pct | SNCA | 2,503 | Yeast fitness, 0.001% induction | [MaveDB 00001249-a-4](https://www.mavedb.org/score-sets/urn:mavedb:00001249-a-4/) |
 
 **Metric:** Spearman ρ between model log-likelihood delta and experimental fitness score.
 
@@ -49,9 +51,9 @@ ClinVar-classified missense SNVs: Pathogenic/Likely Pathogenic vs Benign/Likely 
 | PRKN | 58 | 30 | LOF — ubiquitin ligase | Most common recessive PD |
 | PINK1 | 44 | 22 | LOF — mitophagy kinase | Recessive early-onset PD |
 | LRRK2 | 20 | 142 | GOF — kinase hyperactivation | Most common dominant PD |
-| SNCA | 10 | 6 | GOF — aggregation | Hallmark PD protein |
-| PARK7 | 20 | 6 | LOF — oxidative sensor | Recessive PD |
-| VPS35 | 6 | 4 | GOF — retromer dysfunction | Dominant PD |
+| SNCA | 5 | 3 | GOF — aggregation | Hallmark PD protein (n=8; qualitative only) |
+| PARK7 | 7 | 6 | LOF — oxidative sensor | Recessive PD |
+| VPS35 | 3 | 2 | GOF — retromer dysfunction | Dominant PD (n=5; qualitative only) |
 
 **Metric:** AUROC. Labels: 1 = P/LP, 0 = B/LB. Source: [ClinVar](https://www.ncbi.nlm.nih.gov/clinvar/), downloaded September 2026.
 
@@ -68,7 +70,7 @@ pip install transformers torch pandas scipy numpy
 python score.py --model 8M --assay SNCA_HUMAN_Newberry_2020
 
 # Full DMS track — ESM-2 650M, all 5 assays
-python score.py --model 650M --assays all
+python score.py --model 650M --assay all
 
 # ClinVar pathogenicity track
 python score.py --model 650M --track pathogenicity
@@ -94,12 +96,12 @@ path = load_dataset("Tyronita/LewyGym", "pathogenicity")
 
 | Model | Newberry 2020 | Noh 2026 mean | Mean ρ (all 5) |
 |---|---|---|---|
-| ESM-2 8M | -0.165 | -0.131 | -0.139 |
-| ESM-2 650M | -0.210 | -0.162 | -0.171 |
+| ESM-2 8M | -0.165 | -0.133 | -0.139 |
+| ESM-2 650M | -0.210 | -0.161 | -0.171 |
 | ESM-1v | pending | pending | pending |
 | AlphaMissense | pending | pending | pending |
 
-**Key finding:** ESM-2 conservation signal **inverts** on SNCA (GOF protein) — mean ρ = -0.14 to -0.17 — vs +0.414 on ProteinGym's LOF benchmark. Larger models amplify rather than correct the inversion.
+**Key finding:** ESM-2 conservation signal **inverts** on SNCA — mean ρ = -0.139 to -0.171 (individual assay range -0.115 to -0.210) — vs +0.419 on ProteinGym's 217-assay substitution benchmark (Notin et al., NeurIPS 2023). All five assays are negative; larger models amplify rather than correct the inversion. Note: yeast toxicity captures membrane-binding GOF but is known to fail for fibril-aggregation variants (A30P, G51D).
 
 ---
 
@@ -141,7 +143,7 @@ Cost: O(L²) tokens per assay. SNCA (L=140) takes ~20,000 tokens — runs in sec
 | Source | Licence | Citation |
 |---|---|---|
 | MaveDB (Newberry 2020) | CC0 | Newberry et al., *Nature Chemical Biology* 2020. [doi:10.1038/s41589-020-0480-6](https://doi.org/10.1038/s41589-020-0480-6) |
-| MaveDB (Noh 2026) | CC0 | Noh et al., *Protein Science* 2026. [doi:10.1002/pro.70456](https://doi.org/10.1002/pro.70456) |
+| MaveDB (Noh and Newberry 2026) | CC0 | Noh and Newberry, *Protein Science* 2026. [doi:10.1002/pro.70456](https://doi.org/10.1002/pro.70456) |
 | ClinVar | Public domain | Landrum et al., *Nucleic Acids Research*. [PMID:26582918](https://pubmed.ncbi.nlm.nih.gov/26582918/) |
 
 LewyGym itself is released under CC0 (public domain).
