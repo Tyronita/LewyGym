@@ -137,20 +137,19 @@ def build():
     pdf.set_font("Times", "", 9)
     pdf.set_fill_color(248, 248, 248)
     pdf.multi_cell(CONTENT_W, 5,
-        "LewyGym is to Parkinson's disease what ProteinGym is to general protein fitness: a "
-        "disease-coherent benchmark with standardised format, reproducible scoring, and open data. "
-        "Protein language models (PLMs) trained on evolutionary conservation achieve strong variant "
-        "effect prediction (ESM-2 650M: mean Spearman rho +0.419 across ProteinGym's 217 assays), "
-        "but no benchmark evaluates PLMs across a Parkinson's disease (PD) gene panel. PD spans "
-        "two opposing pathogenic mechanisms -- gain-of-function (GOF) aggregation in SNCA and "
-        "LRRK2, and loss-of-function (LOF) enzyme/kinase disruption in GBA, PRKN, PINK1, PARK7 -- "
-        "that conservation-based models are not designed to distinguish. We introduce LewyGym, a "
-        "ProteinGym-compatible benchmark covering seven PD genes with two tracks: (i) a DMS fitness "
-        "track with 12,860 missense variants across five alpha-synuclein (SNCA) assays from MaveDB, "
-        "and (ii) a ClinVar pathogenicity classification track with 421 annotated missense variants. "
-        "Baseline ESM-2 evaluation yields mean Spearman rho -0.139 to -0.171 on the DMS track -- "
-        "a 0.58-unit inversion relative to ProteinGym. All five assays are negative; larger models "
-        "amplify the inversion. LewyGym is released under CC0 with a reproducible scoring script.",
+        "Protein language models (PLMs) trained on evolutionary sequence conservation achieve strong "
+        "variant effect prediction, with ESM-2 650M reaching mean Spearman rho +0.419 across "
+        "ProteinGym's 217-assay substitution benchmark. However, no benchmark evaluates PLMs across "
+        "a disease-coherent Parkinson's disease (PD) gene panel. PD spans two opposing pathogenic "
+        "mechanisms: gain-of-function (GOF) aggregation (SNCA, LRRK2) and loss-of-function (LOF) "
+        "enzyme/kinase disruption (GBA, PRKN, PINK1, PARK7). We introduce LewyGym, a "
+        "ProteinGym-compatible benchmark covering seven PD genes. LewyGym provides two tracks: "
+        "(i) a DMS fitness track with 12,860 missense variants across five alpha-synuclein (SNCA) "
+        "assays from MaveDB, and (ii) a ClinVar pathogenicity classification track with 421 "
+        "annotated missense variants across seven PD genes. Baseline ESM-2 evaluation yields mean "
+        "Spearman rho -0.139 to -0.171 on the DMS track -- a 0.58-unit inversion relative to "
+        "ProteinGym. All five assays are negative; larger models amplify the inversion. LewyGym "
+        "is released under CC0 with a reproducible scoring script.",
         border=1, fill=True, align="J")
     pdf.ln(2)
 
@@ -210,16 +209,6 @@ def build():
         "alpha-synuclein aggregates that define PD pathology. Our baseline results confirm that "
         "ESM-2 conservation signals invert on SNCA (mean Spearman rho = -0.139 to -0.171), and "
         "that larger ESM-2 models amplify rather than correct this inversion."
-    )
-
-    para(
-        "LewyGym is developed alongside LeetBio (leetbio.vercel.app), an open educational platform "
-        "for researchers transitioning from machine learning into computational biology. LeetBio "
-        "frames the biology of Parkinson's disease as a series of graded programming problems -- "
-        "from implementing the central dogma to predicting variant effects with ESM-2 -- targeting "
-        "the growing cohort of ML practitioners who want to apply their skills in a disease context "
-        "without a formal biology background. LewyGym serves as the research substrate: the problems "
-        "students solve on LeetBio are grounded in the same datasets and models benchmarked here."
     )
 
     # ── 2. BENCHMARK DESIGN ────────────────────────────────────────────────
@@ -443,13 +432,6 @@ def build():
         "co-investigator kept the work grounded in what matters: understanding the molecular "
         "mechanisms of a disease that affects millions of families, and holding the computational "
         "tools we use to study it to a higher standard."
-    )
-
-    para(
-        "LewyGym is the research companion to LeetBio (leetbio.vercel.app), an edtech platform for "
-        "ML practitioners transitioning into computational biology. The problems on LeetBio -- from "
-        "central dogma simulation to ESM-2 variant effect prediction -- are built directly on the "
-        "datasets and findings in this paper."
     )
 
     # ── REFERENCES ─────────────────────────────────────────────────────────
