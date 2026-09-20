@@ -8,7 +8,7 @@ A ProteinGym-compatible benchmark for zero-shot variant effect prediction across
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-Datasets-yellow)](https://huggingface.co/datasets/Tyronita/LewyGym)
 [![License: CC0](https://img.shields.io/badge/License-CC0-blue)](https://creativecommons.org/publicdomain/zero/1.0/)
 
-📄 **[Preprint PDF](lewygym_preprint.pdf)** · 📊 **[Benchmark Survey](lewygym_survey.pdf)** · 🎯 **[Project Pitch](lewy_pitch.pdf)**
+📄 **[Preprint PDF](lewygym_preprint.pdf)** · 📊 **[Benchmark Survey](lewygym_survey.pdf)**
 
 ---
 
